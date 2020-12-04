@@ -1,0 +1,7 @@
+{
+  "name": "ionic-uas",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
