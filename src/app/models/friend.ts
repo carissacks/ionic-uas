@@ -1,0 +1,4 @@
+type Friend={
+    uid: string;
+
+}
