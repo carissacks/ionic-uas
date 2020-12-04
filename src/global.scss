@@ -24,3 +24,16 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+:root {
+  ion-tab-button.tab-selected {
+    ion-icon, ion-label {
+      color: var(--ion-color-secondary) !important;
+      --ion-color-base: var(--ion-color-secondary) !important;
+    }
+  }
+}
+
+.main-container{
+  min-height: 100vh;
+}

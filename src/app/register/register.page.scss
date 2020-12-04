@@ -1,0 +1,12 @@
+ion-label{
+  h1{
+    font-weight: bold;
+  }
+}
+p{
+  color: var(--ion-color-primary)
+}
+.error-message{
+  padding-top: 8px;
+  color: var(--ion-color-danger);
+}

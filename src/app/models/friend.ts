@@ -1,4 +1,5 @@
-type Friend={
-    uid: string;
-
-}
+export type Friend = {
+  uid: string;
+  name: string;
+  avatar?: string;
+};
