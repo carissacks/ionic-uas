@@ -17,7 +17,12 @@ import { UsersService } from './users.service';
 })
 export class AuthService implements CanActivate {
   private isAuth = true;
-  private currentUser: User;
+  private currentUser: User = {
+    uid: '76Qa99oM6pg4jtQbdyYVRs0FVAm2',
+    firstName: 'Carissa',
+    lastName: 's',
+    email: 's',
+  };
 
   constructor(
     private data: AngularFirestore,
@@ -59,10 +64,10 @@ export class AuthService implements CanActivate {
     this.userSrv
       .getDetail(uid)
       .valueChanges()
-      .subscribe((detail) => (this.currentUser = {...detail, uid}));
+      .subscribe((detail) => (this.currentUser = { ...detail, uid }));
   }
 
-  getCurrentUserDetail(){
+  getCurrentUserDetail() {
     return this.currentUser;
   }
 

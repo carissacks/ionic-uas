@@ -12,11 +12,11 @@
     <ion-row class="ion-justify-content-center ion-align-items-center">
       <ion-col size="11" sizeMd="8">
         <ion-list>
-            <ion-item>
+            <ion-item *ngFor="let user of users" (click)="addFriend(user)">
               <ion-avatar slot="start">
                 <ion-img src="/assets/pictures/avatar.svg"></ion-img>
               </ion-avatar>
-              <ion-label> Saya</ion-label>
+              <ion-label>{{user.firstName +' '+user.lastName}}</ion-label>
             </ion-item>
         </ion-list>
       </ion-col>
