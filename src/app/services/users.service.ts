@@ -25,6 +25,10 @@ export class UsersService {
     return this.db.object(this.dbPath + '/' + uid);
   }
 
+  getDetailByEmail(email: string): AngularFireList<User> {
+    return this.db.list(this.dbPath, (ref) => ref.orderByChild('email').equalTo(email).limitToFirst(1));
+  }
+
   async create(uid: string, user: User) {
     try {
       await this.userRef.update(uid, user);

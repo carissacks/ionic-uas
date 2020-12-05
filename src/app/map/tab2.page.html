@@ -1,11 +1,36 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 2
+      Pin Me
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <div #map id="map"></div>
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-grid>
+      <ion-row class="ion-align-items-center ion-justify-content-start">
+        <ion-col size="10" *ngIf="manualCheckIn">
+          <form [formGroup]="form">
+            <ion-item>
+              <ion-input formControlName="name" type="text" placeholder="Tell the others about this"></ion-input>
+              <ion-icon name="close" (click)="toogleManualCheckIn()" slot="end"></ion-icon>
+              <ion-icon name="send" (click)="checkIn()" slot="end"></ion-icon>
+            </ion-item>
+          </form>
+        </ion-col>
+        <ion-col size="8" *ngIf="!manualCheckIn">
+          <ion-button (click)="toogleManualCheckIn()">Check in</ion-button>
+        </ion-col>
+        <ion-col size="2">
+        <ion-fab-button (click)="recenter()">
+          <ion-icon name="location"></ion-icon>
+        </ion-fab-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </ion-fab>
+
 </ion-content>

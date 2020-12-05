@@ -3,22 +3,40 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Registered Users</ion-title>
+    <ion-title>Add New Friends</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-grid>
-    <ion-row class="ion-justify-content-center ion-align-items-center">
+    <ion-row class="ion-justify-content-center ion-align-items-center ion-padding-top">
       <ion-col size="11" sizeMd="8">
-        <ion-list>
-            <ion-item *ngFor="let user of users" (click)="addFriend(user)">
-              <ion-avatar slot="start">
-                <ion-img src="/assets/pictures/avatar.svg"></ion-img>
-              </ion-avatar>
-              <ion-label>{{user.firstName +' '+user.lastName}}</ion-label>
-            </ion-item>
-        </ion-list>
+        <form [formGroup]="form">
+          <ion-item>
+            <ion-input formControlName="search" type="text" placeholder="Search for new friend by email"></ion-input>
+          </ion-item>
+        </form>
+        <ion-button
+                class="ion-margin-top"
+                expand="full"
+                mode="ios"
+                [disabled]="form.invalid||loading"
+                (click)="onSubmit()"
+        >Find Them</ion-button
+        >
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="user" class="ion-justify-content-center ion-align-items-center ion-padding-top ion-margin-top" (click)="addFriend()">
+      <ion-col size="5" sizeMd="2">
+        <ion-img src="assets/pictures/avatar.svg"></ion-img>
+      </ion-col>
+      <ion-col size="11" sizeMd="6" class="ion-text-center">
+      <ion-label class="ion-text-center">{{user.firstName +' '+user.lastName}}</ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!user&& !found" class="ion-justify-content-center ion-align-items-center ion-padding-top" style="height: 50vh">
+      <ion-col size="11" sizeMd="8" class="ion-text-center">
+        <ion-label class="ion-text-center">Your friend might register with different email or haven't registered yet.</ion-label>
       </ion-col>
     </ion-row>
   </ion-grid>

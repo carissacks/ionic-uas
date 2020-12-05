@@ -46,4 +46,8 @@ export class Tab1Page implements OnInit {
       this.friends = this.allFriends.filter(({ name }) => name.toLowerCase().includes(val.toLowerCase()));
     });
   }
+
+  removeFriend(uid: string){
+    this.friendSrv.delete(this.currUid, uid);
+  }
 }

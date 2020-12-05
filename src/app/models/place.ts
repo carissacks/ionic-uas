@@ -1,5 +1,6 @@
 export type Place = {
-  lat: string;
-  lng: string;
+  lat: number;
+  lng: number;
   name: string;
+  time: string;
 };
