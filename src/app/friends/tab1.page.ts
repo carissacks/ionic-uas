@@ -22,7 +22,7 @@ export class Tab1Page implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.currUid = this.authSrv.getCurrentUserDetail().uid;
+    this.currUid = this.currUid = this.authSrv.getUid();
     this.friendSrv
       .getAll(this.currUid)
       .snapshotChanges()

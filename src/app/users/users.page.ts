@@ -10,7 +10,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
+import {ToastController} from '@ionic/angular';
 
 @Component({
   selector: 'app-users',
@@ -31,10 +32,11 @@ export class UsersPage implements OnInit {
     private friendsSrv: FriendsService,
     private authSrv: AuthService,
     private router: Router,
+    private toastCtrl: ToastController,
   ) {}
 
   ngOnInit() {
-    this.currUid = this.authSrv.getCurrentUserDetail().uid;
+    this.currUid = this.authSrv.getUid();
     this.form = this.formBuilder.group({
       search: new FormControl(
         '',
@@ -46,22 +48,32 @@ export class UsersPage implements OnInit {
     });
   }
 
+  async presentToast(message: string, color: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      color,
+      duration: 1000,
+    });
+    toast.present();
+  }
+
   async addFriend() {
     const { uid, firstName, lastName, avatar = '' } = this.user;
-    if (uid === this.currUid){
-      console.log(`You know your own location. Add someone else.`);
+    if (uid === this.currUid) {
+      this.presentToast(`You know your own location. Add someone else.`, 'warning');
       return;
     }
     const name = firstName + ' ' + lastName;
     const res = await this.friendsSrv.add(this.currUid, uid, {
-      uid,
       name,
+      avatar,
     });
     if (res.success) {
-      console.log('buat toast');
+      this.presentToast('You have a new friend!', 'success');
       this.router.navigate(['home']);
       return;
     }
+    this.presentToast('Hmm you friend is missing. Try again', 'danger');
     console.log(res.error);
   }
 
@@ -72,20 +84,20 @@ export class UsersPage implements OnInit {
     this.usersSrv
       .getDetailByEmail(search)
       .snapshotChanges()
-          .pipe(
-            map((changes) =>
-              changes.map((item) => ({
-                uid: item.payload.key,
-                ...item.payload.val(),
-              }))
-            )
-          )
+      .pipe(
+        map((changes) =>
+          changes.map((item) => ({
+            uid: item.payload.key,
+            ...item.payload.val(),
+          }))
+        )
+      )
       .subscribe((data) => {
         this.loading = false;
         this.user = data[0];
         console.log(this.user);
         console.log(data[0]);
-        if (!data[0]){
+        if (!data[0]) {
           this.found = false;
         }
       });

@@ -6,3 +6,10 @@ ion-item{
 ion-button{
   --border-radius: 40px;
 }
+
+img{
+  border-radius: 100px;
+  height: 150px;
+  width: 150px;
+  object-fit: cover;
+}

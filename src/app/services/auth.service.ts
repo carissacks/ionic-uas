@@ -16,13 +16,9 @@ import { UsersService } from './users.service';
   providedIn: 'root',
 })
 export class AuthService implements CanActivate {
-  private isAuth = true;
-  private currentUser: User = {
-    uid: '76Qa99oM6pg4jtQbdyYVRs0FVAm2',
-    firstName: 'Carissa',
-    lastName: 's',
-    email: 's',
-  };
+  private isAuth = false;
+  private currentUser: User;
+  private uid: string;
 
   constructor(
     private data: AngularFirestore,
@@ -32,10 +28,11 @@ export class AuthService implements CanActivate {
   ) {}
 
   register(data) {
+    const{password, ...otherData} = data;
     return this.auth
-      .createUserWithEmailAndPassword(data.email, data.password)
+      .createUserWithEmailAndPassword(data.email, password)
       .then(({ user }) => {
-        this.userSrv.create(user.uid, data);
+        this.userSrv.createOrUpdate(user.uid, otherData);
       });
   }
 
@@ -45,6 +42,7 @@ export class AuthService implements CanActivate {
       .then(({ user }) => {
         if (user) {
           this.isAuth = true;
+          this.uid = user.uid;
           this.userDetails(user.uid);
         }
       });
@@ -72,6 +70,10 @@ export class AuthService implements CanActivate {
     return this.currentUser;
   }
 
+  getUid(){
+    return this.uid;
+  }
+
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -80,7 +82,6 @@ export class AuthService implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    console.log(this.isAuth);
     if (!this.isAuth) {
       this.router.navigate(['login']);
       return false;

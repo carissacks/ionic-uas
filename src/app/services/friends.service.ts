@@ -16,7 +16,7 @@ export class FriendsService {
     return this.db.list(this.dbPath + '/' + uid);
   }
 
-  async add(currUid: string, uid: string, user: Friend) {
+  async add(currUid: string, uid: string, user: Omit<Friend, 'uid'>) {
     const path = this.dbPath + '/' + currUid + '/' + uid;
     console.log(path);
     console.log(user);

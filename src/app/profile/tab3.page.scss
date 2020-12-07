@@ -3,3 +3,22 @@ ion-list-header{
   color: white;
   border-radius: 4px 4px 0px 0px;
 }
+
+img{
+  border-radius: 100px;
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+}
+
+.profile-icon{
+  background-color: var(--ion-color-primary);
+  padding: 4px;
+  border-radius: 100px;
+  color: white;
+  margin-left: -24px;
+}
+
+input[type="file"]{
+  display: none;
+}

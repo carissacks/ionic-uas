@@ -29,7 +29,7 @@ export class UsersService {
     return this.db.list(this.dbPath, (ref) => ref.orderByChild('email').equalTo(email).limitToFirst(1));
   }
 
-  async create(uid: string, user: User) {
+  async createOrUpdate(uid: string, user: User) {
     try {
       await this.userRef.update(uid, user);
       return { success: true };
@@ -37,4 +37,5 @@ export class UsersService {
       return { success: false, error: message };
     }
   }
+
 }

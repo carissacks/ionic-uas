@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import {ToastController} from '@ionic/angular';
 
 @Component({
   selector: 'app-register',
@@ -21,6 +22,7 @@ export class RegisterPage implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authSrv: AuthService,
+    private toastCtrl: ToastController,
     private router: Router
   ) {}
 
@@ -43,7 +45,18 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  async presentToast(message: string, color: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      color,
+      duration: 1000,
+    });
+    toast.present();
+  }
+
   onSubmit() {
+    this.errorMessage = null;
+    this.match = true;
     const {
       firstName,
       lastName,
@@ -61,9 +74,11 @@ export class RegisterPage implements OnInit {
           firstName,
           lastName,
           email,
+          password,
         })
         .then(() => {
           this.router.navigate(['login']);
+          this.presentToast(`You are registered! Let's start!`, 'success');
           return;
         })
         .catch((error) => {
@@ -75,7 +90,7 @@ export class RegisterPage implements OnInit {
               break;
             }
             case 'auth/argument-error': {
-              this.errorMessage = 'Wrong password';
+              this.errorMessage = 'Please try again';
               break;
             }
           }
