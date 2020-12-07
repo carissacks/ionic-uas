@@ -66,10 +66,6 @@ export class AuthService implements CanActivate {
       .subscribe((detail) => (this.currentUser = { ...detail, uid }));
   }
 
-  getCurrentUserDetail() {
-    return this.currentUser;
-  }
-
   getUid(){
     return this.uid;
   }

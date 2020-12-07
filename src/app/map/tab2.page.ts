@@ -9,7 +9,7 @@ import { FriendsService } from '../services/friends.service';
 import { PlacesService } from '../services/places.service';
 import { AuthService } from '../services/auth.service';
 import { ToastController } from '@ionic/angular';
-import {Friend, FriendLocation} from '../models/friend';
+import { Friend, FriendLocation } from '../models/friend';
 import { map } from 'rxjs/operators';
 
 declare var google: any;
@@ -25,12 +25,13 @@ export class Tab2Page implements OnInit {
   manualCheckIn = false;
   friendsLocation: Array<FriendLocation> = [];
   friends: Array<Friend>;
-  geocoder: any;
   map: any;
   marker: any;
   friendsMarker: Map<string, any> = new Map();
+  hasCheckedIn = false;
 
   pos: { lat: number; lng: number } = {
+    // UMN
     lat: -6.256081,
     lng: 106.618755,
   };
@@ -50,6 +51,11 @@ export class Tab2Page implements OnInit {
       name: new FormControl('', Validators.required),
     });
     this.getAllFriendsLocation();
+    setTimeout(() => {
+      if (this.hasCheckedIn) { return; }
+      this.recenter();
+      this.checkIn(true);
+    }, 20000);
   }
 
   getAllFriendsLocation() {
@@ -104,7 +110,7 @@ export class Tab2Page implements OnInit {
     }
   }
 
-  refreshNearbyFriends(){
+  refreshNearbyFriends() {
     this.friendsMarker.forEach((marker) => marker.setMap(null));
     this.friendsMarker.clear();
     this.friendsLocation.map((friend) => this.handleFriendsMarker(friend));
@@ -182,17 +188,23 @@ export class Tab2Page implements OnInit {
     }
   }
 
-  async checkIn() {
-    if (this.form.invalid) {
-      return;
+  async checkIn(isAuto = false) {
+    let name;
+    if (!isAuto) {
+      if (this.form.invalid) {
+        return;
+      }
+      name = this.form.value.name;
+    } else {
+      name = 'Automatic check in';
     }
-    const { name } = this.form.value;
     const res = await this.placesSrv.checkIn(this.currUid, {
       ...this.pos,
       name,
     });
 
     if (res.success) {
+      this.hasCheckedIn = true;
       this.presentToast(`You've been pinned!`, 'success');
       this.manualCheckIn = false;
       this.form.reset();

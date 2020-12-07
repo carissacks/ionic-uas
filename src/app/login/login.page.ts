@@ -43,6 +43,7 @@ export class LoginPage implements OnInit {
       .then(() => {
         this.router.navigate(['home']);
         this.form.reset();
+        this.errorMessage = null;
         this.loading = false;
         return;
       })
