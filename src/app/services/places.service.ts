@@ -16,7 +16,7 @@ export class PlacesService {
   }
 
   getLatest(uid: string): AngularFireList<Place> {
-    return this.db.list(this.dbPath + '/' + uid, (ref) => ref.orderByChild('time').limitToFirst(1));
+    return this.db.list(this.dbPath + '/' + uid, (ref) => ref.orderByChild('time').limitToLast(1));
   }
 
   async checkIn(currUid: string, location: Omit<Place, 'time'>) {

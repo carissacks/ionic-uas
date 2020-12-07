@@ -42,6 +42,8 @@ export class LoginPage implements OnInit {
       .signIn(this.form.value)
       .then(() => {
         this.router.navigate(['home']);
+        this.form.reset();
+        this.loading = false;
         return;
       })
       .catch((error) => {

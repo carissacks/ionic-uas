@@ -78,6 +78,8 @@ export class RegisterPage implements OnInit {
         })
         .then(() => {
           this.router.navigate(['login']);
+          this.form.reset();
+          this.loading = false;
           this.presentToast(`You are registered! Let's start!`, 'success');
           return;
         })
