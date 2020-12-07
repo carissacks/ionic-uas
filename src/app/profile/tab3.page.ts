@@ -7,7 +7,7 @@ import { finalize, map } from 'rxjs/operators';
 import {
   ActionSheetController,
   AlertController,
-  GestureController,
+  GestureController, LoadingController,
   Platform, ToastController,
 } from '@ionic/angular';
 import {
@@ -41,6 +41,7 @@ export class Tab3Page implements OnInit {
     private storage: AngularFireStorage,
     private platform: Platform,
     private gestureCtrl: GestureController,
+    private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private actionSheetCtrl: ActionSheetController
@@ -84,19 +85,20 @@ export class Tab3Page implements OnInit {
         },
         {
           text: 'Remove',
-          handler: () => {
-            this.placesSrv.delete(this.user.uid, key);
-            this.presentToast('Check point deleted', 'success');
+          handler: async () => {
+            const res = await this.placesSrv.delete(this.currUid, key);
+            if (res.success){
+              this.presentToast('Check point deleted', 'success');
+              return;
+            }
+            this.presentToast('Oops. Try again', 'danger');
+            console.log(res.error);
           },
         },
       ],
     });
 
     await alert.present();
-  }
-
-  logout() {
-    this.authSrv.signOut();
   }
 
   async presentToast(message: string, color: string) {
@@ -108,6 +110,20 @@ export class Tab3Page implements OnInit {
     toast.present();
   }
 
+  async startUploading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Updating your new look',
+    });
+    await loading.present();
+  }
+
+  async finishUploading(){
+    await this.loadingCtrl.dismiss();
+  }
+
+  logout() {
+    this.authSrv.signOut();
+  }
 
   async displayPicSourceOption() {
     const actionSheet = await this.actionSheetCtrl.create({
@@ -164,8 +180,8 @@ export class Tab3Page implements OnInit {
     this.uploadImage(file, false);
   }
 
-  uploadImage(image: string, isCamera: boolean) {
-    this.presentToast('Uploading image', 'primary');
+  async uploadImage(image: string, isCamera: boolean) {
+    await this.startUploading();
     const filePath = `ProfilePic/${new Date().toISOString()}`;
     const fileRef = this.storage.ref(filePath);
     let task;
@@ -182,10 +198,11 @@ export class Tab3Page implements OnInit {
         finalize(() => {
           fileRef.getDownloadURL().subscribe((url) => {
             if (url) {
-              this.usersSrv.createOrUpdate(this.user.uid, {
+              this.usersSrv.createOrUpdate(this.currUid, {
                 ...this.user,
                 avatar: url,
               });
+              this.finishUploading();
               this.presentToast('Profile picture is updated', 'success');
             }
           });

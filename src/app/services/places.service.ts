@@ -30,7 +30,12 @@ export class PlacesService {
     }
   }
 
-  delete(currUid: string, key: string){
-    return this.db.list(this.dbPath + '/' + currUid).remove(key);
+  async delete(currUid: string, key: string){
+    try{
+      await this.db.list(this.dbPath + '/' + currUid).remove(key);
+      return { success: true };
+    } catch ({ message }) {
+      return { success: false, error: message };
+    }
   }
 }

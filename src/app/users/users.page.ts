@@ -95,8 +95,6 @@ export class UsersPage implements OnInit {
       .subscribe((data) => {
         this.loading = false;
         this.user = data[0];
-        console.log(this.user);
-        console.log(data[0]);
         if (!data[0]) {
           this.found = false;
         }
