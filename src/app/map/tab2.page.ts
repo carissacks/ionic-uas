@@ -55,7 +55,7 @@ export class Tab2Page implements OnInit {
       if (this.hasCheckedIn) { return; }
       this.recenter();
       this.checkIn(true);
-    }, 20000);
+    }, 600000);
   }
 
   getAllFriendsLocation() {
