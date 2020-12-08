@@ -1,26 +1,27 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
-} from '@angular/forms';
-import { FriendsService } from '../services/friends.service';
-import { PlacesService } from '../services/places.service';
-import { AuthService } from '../services/auth.service';
-import { ToastController } from '@ionic/angular';
-import { Friend, FriendLocation } from '../models/friend';
-import { map } from 'rxjs/operators';
+} from "@angular/forms";
+import { FriendsService } from "../services/friends.service";
+import { PlacesService } from "../services/places.service";
+import { AuthService } from "../services/auth.service";
+import { ToastController } from "@ionic/angular";
+import { Friend, FriendLocation } from "../models/friend";
+import { map } from "rxjs/operators";
 
 declare var google: any;
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss'],
+  selector: "app-tab2",
+  templateUrl: "tab2.page.html",
+  styleUrls: ["tab2.page.scss"],
 })
-export class Tab2Page implements OnInit {
+export class Tab2Page implements OnInit, OnDestroy {
   form: FormGroup;
+  automaticCallback: any;
   currUid: string;
   manualCheckIn = false;
   friendsLocation: Array<FriendLocation> = [];
@@ -36,7 +37,7 @@ export class Tab2Page implements OnInit {
     lng: 106.618755,
   };
 
-  @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef;
+  @ViewChild("map", { read: ElementRef, static: false }) mapRef: ElementRef;
   constructor(
     private formBuilder: FormBuilder,
     private authSrv: AuthService,
@@ -46,16 +47,29 @@ export class Tab2Page implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log('nit');
     this.currUid = this.currUid = this.authSrv.getUid();
     this.form = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new FormControl("", Validators.required),
     });
     this.getAllFriendsLocation();
-    setTimeout(() => {
-      if (this.hasCheckedIn) { return; }
+    this.automaticCallback = setTimeout(() => {
+      if (this.hasCheckedIn) {
+        return;
+      }
       this.recenter();
       this.checkIn(true);
     }, 600000);
+  }
+
+  ionViewDidEnter() {
+    this.initMap(this.pos);
+    this.refreshNearbyFriends();
+  }
+
+  ngOnDestroy(){
+    console.log('bye');
+    clearTimeout(this.automaticCallback);
   }
 
   getAllFriendsLocation() {
@@ -72,7 +86,7 @@ export class Tab2Page implements OnInit {
       )
       .subscribe((friends) => {
         this.friends = friends;
-        this.friendsLocation = [];
+        this.clearAllMarkers();
         friends.map(({ uid, name }, idx) =>
           this.placesSrv
             .getLatest(uid)
@@ -95,6 +109,9 @@ export class Tab2Page implements OnInit {
 
   handleFriendsMarker(data) {
     const { uid, location } = data;
+    if (!location) {
+      return;
+    }
     const dist = this.checkDistanceInKm(this.pos, location);
     if (dist <= 20) {
       if (this.friendsMarker.has(uid)) {
@@ -110,9 +127,16 @@ export class Tab2Page implements OnInit {
     }
   }
 
-  refreshNearbyFriends() {
+  clearAllMarkers() {
+    if (this.friendsLocation.length < 1) {
+      return;
+    }
     this.friendsMarker.forEach((marker) => marker.setMap(null));
     this.friendsMarker.clear();
+  }
+
+  refreshNearbyFriends() {
+    this.clearAllMarkers();
     this.friendsLocation.map((friend) => this.handleFriendsMarker(friend));
   }
 
@@ -138,11 +162,6 @@ export class Tab2Page implements OnInit {
     this.friendsMarker.delete(uid);
   }
 
-  ionViewDidEnter() {
-    this.initMap(this.pos);
-    this.refreshNearbyFriends();
-  }
-
   toogleManualCheckIn() {
     this.manualCheckIn = !this.manualCheckIn;
   }
@@ -159,11 +178,11 @@ export class Tab2Page implements OnInit {
     this.marker = new google.maps.Marker({
       position: this.pos,
       map: this.map,
-      label: 'You',
+      label: "You",
     });
 
     // Configure the click listener
-    this.map.addListener('click', (mapsMouseEvent) => {
+    this.map.addListener("click", (mapsMouseEvent) => {
       if (this.manualCheckIn) {
         this.marker.setPosition(mapsMouseEvent.latLng);
         this.pos = mapsMouseEvent.latLng.toJSON();
@@ -196,7 +215,7 @@ export class Tab2Page implements OnInit {
       }
       name = this.form.value.name;
     } else {
-      name = 'Automatic check in';
+      name = "Automatic check in";
     }
     const res = await this.placesSrv.checkIn(this.currUid, {
       ...this.pos,
@@ -205,12 +224,12 @@ export class Tab2Page implements OnInit {
 
     if (res.success) {
       this.hasCheckedIn = true;
-      this.presentToast(`You've been pinned!`, 'success');
+      this.presentToast(`You've been pinned!`, "success");
       this.manualCheckIn = false;
       this.form.reset();
       return;
     }
-    this.presentToast(`We can't track you. Please try again.`, 'danger');
+    this.presentToast(`We can't track you. Please try again.`, "danger");
   }
 
   // need different API
