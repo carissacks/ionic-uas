@@ -47,7 +47,6 @@ export class Tab2Page implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    console.log('nit');
     this.currUid = this.currUid = this.authSrv.getUid();
     this.form = this.formBuilder.group({
       name: new FormControl("", Validators.required),
@@ -68,7 +67,6 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    console.log('bye');
     clearTimeout(this.automaticCallback);
   }
 
@@ -203,6 +201,7 @@ export class Tab2Page implements OnInit, OnDestroy {
         this.pos = pos;
         this.map.setCenter(pos);
         this.marker.setPosition(this.pos);
+        this.refreshNearbyFriends();
       });
     }
   }
